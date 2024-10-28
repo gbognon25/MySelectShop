@@ -10,6 +10,7 @@ import com.sparta.myselectshop.repository.ProductFolderRepository;
 import com.sparta.myselectshop.repository.ProductRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -54,6 +56,8 @@ public class ProductService {
   public Page<ProductResponseDto> getProducts(
       User user, int page, int size, String sortBy, boolean isAsc) {
 
+    log.info("Fetching page {} with size {}, sorted by {} in {} order", page, size, sortBy, isAsc ? "ASC" : "DESC");
+
     Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
     Sort sort = Sort.by(direction, sortBy);
     Pageable pageable = PageRequest.of(page, size, sort);
@@ -68,6 +72,7 @@ public class ProductService {
       productList = productRepository.findAll(pageable);
     }
 
+    log.info("Total pages: {}", productList.getTotalPages());
     return productList.map(ProductResponseDto::new);
   }
 
